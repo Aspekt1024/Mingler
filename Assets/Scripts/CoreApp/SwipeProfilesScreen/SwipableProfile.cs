@@ -11,15 +11,8 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
     public Text TaglineText;
     public CanvasGroup YesOverlay;
     public CanvasGroup NoOverlay;
-
-    public struct Profile
-    {
-        public string Name;
-        public int Age;
-        public string Tagline;
-        public Texture Photo;
-    }
-
+    public Image Photo;
+    
     private enum States
     {
         None, Pressed, Released, Held, Clicked, SwipedLeft, SwipedRight, Disabled

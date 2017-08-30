@@ -36,7 +36,8 @@ public class Profile
     public string Name;
     public string Age;
     public string Tagline;
-    public Sprite Photo;
+    public Sprite PhotoSprite;
+    public string PhotoPath;
     public Vector2 PhotoSize;
     public Vector3 PhotoScale;
     public Vector2 PhotoAnchor;

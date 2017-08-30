@@ -10,7 +10,6 @@ using System.Linq;
 public class ProfileCreatorInspector : Editor {
     
     private SwipableProfile profile;
-    private Profile profileValues;
     private bool saveButtonPressed;
     private bool loadButtonPressed;
     private int profileIndex;
@@ -50,7 +49,7 @@ public class ProfileCreatorInspector : Editor {
         if (saveButtonPressed || GUILayout.Button("Save"))
         {
             saveButtonPressed = true;
-            EditorGUILayout.LabelField("Are you sure you want to save " + profile.NameText.name + "?");
+            EditorGUILayout.LabelField("Are you sure you want to save " + profile.NameText.text + "?");
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Yes"))
             {
@@ -103,31 +102,13 @@ public class ProfileCreatorInspector : Editor {
 
     private void Load(string profileName)
     {
-        profileValues = ProfileSerializer.Load(profileName);
-
-        profile.NameText.text = profileValues.Name;
-        profile.AgeText.text = profileValues.Age;
-        profile.TaglineText.text = profileValues.Tagline;
-
-        profile.Photo.sprite = profileValues.Photo;
-        profile.Photo.transform.position = profileValues.PhotoPosition;
-        profile.Photo.rectTransform.anchoredPosition = profileValues.PhotoAnchor;
-        profile.Photo.rectTransform.sizeDelta = profileValues.PhotoSize;
-        profile.Photo.transform.localScale = profileValues.PhotoScale;
+        Profile profileValues = ProfileSerializer.Load(profileName);
+        profile.SetProfile(profileValues);
     }
 
     private void Save()
     {
-        profileValues.Name = profile.NameText.text;
-        profileValues.Age = profile.AgeText.text;
-        profileValues.Tagline = profile.TaglineText.text;
-
-        profileValues.Photo = profile.Photo.sprite;
-        profileValues.PhotoAnchor = profile.Photo.rectTransform.anchoredPosition;
-        profileValues.PhotoSize = profile.Photo.rectTransform.sizeDelta;
-        profileValues.PhotoPosition = profile.Photo.transform.position;
-        profileValues.PhotoScale = profile.Photo.transform.localScale;
-
+        Profile profileValues = profile.GetProfile();
         ProfileSerializer.Save(profileValues);
     }
 }

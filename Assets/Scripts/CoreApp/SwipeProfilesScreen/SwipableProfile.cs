@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.IO;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SwipableProfile : MonoBehaviour, ISwipable {
 
@@ -81,10 +86,34 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
     public void SetProfile(Profile profile)
     {
         NameText.text = profile.Name;
-        AgeText.text = profile.Age.ToString();
+        AgeText.text = profile.Age;
         TaglineText.text = profile.Tagline;
+        
+        Photo.sprite = Resources.Load<Sprite>("Portraits/" + profile.PhotoPath);
+        Photo.transform.position = profile.PhotoPosition;
+        Photo.rectTransform.anchoredPosition = profile.PhotoAnchor;
+        Photo.rectTransform.sizeDelta = profile.PhotoSize;
+        Photo.transform.localScale = profile.PhotoScale;
     }
     
+    public Profile GetProfile()
+    {
+        return new Profile()
+        {
+            Name = NameText.text,
+            Age = AgeText.text,
+            Tagline = TaglineText.text,
+#if UNITY_EDITOR
+            PhotoPath = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(Photo.sprite)),
+#endif
+            PhotoSprite = Photo.sprite,
+            PhotoAnchor = Photo.rectTransform.anchoredPosition,
+            PhotoSize = Photo.rectTransform.sizeDelta,
+            PhotoPosition = Photo.transform.position,
+            PhotoScale = Photo.transform.localScale
+        };
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (state == States.Held || state == States.Disabled) return;
@@ -96,7 +125,11 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
     {
         if (state == States.Held)
         {
-            if (CheckForSwipe()) return;
+            if (CheckForSwipe())
+            {
+                ProfilesManager.Instance.ProfileSwiped();
+                return;
+            }
             state = States.Released;
         }
     }
@@ -131,7 +164,8 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
             isDragged = true;
         }
         float xPos = originalPosition.x + pointerPosition.x - pointerStartPosition.x;
-        rectTf.position = new Vector3(xPos, rectTf.position.y, rectTf.position.z);
+        float yPos = originalPosition.y + pointerPosition.y - pointerStartPosition.y;
+        rectTf.position = new Vector3(xPos, yPos, rectTf.position.z);
         ProcessSwipePosition();
     }
 

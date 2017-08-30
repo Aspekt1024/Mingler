@@ -8,8 +8,17 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
 
     public Text NameText;
     public Text AgeText;
+    public Text TaglineText;
     public CanvasGroup YesOverlay;
     public CanvasGroup NoOverlay;
+
+    public struct Profile
+    {
+        public string Name;
+        public int Age;
+        public string Tagline;
+        public Texture Photo;
+    }
 
     private enum States
     {
@@ -75,6 +84,13 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
                 break;
         }
 	}
+
+    public void SetProfile(Profile profile)
+    {
+        NameText.text = profile.Name;
+        AgeText.text = profile.Age.ToString();
+        TaglineText.text = profile.Tagline;
+    }
     
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -95,12 +111,12 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
     private bool CheckForSwipe()
     {
         float positionOnScreen = Camera.main.WorldToScreenPoint(transform.position).x;
-        if (positionOnScreen < Screen.width * 0.2f)
+        if (positionOnScreen < Screen.width * 0.1f)
         {
             state = States.SwipedLeft;
             return true;
         }
-        else if (positionOnScreen > Screen.width * 0.8f)
+        else if (positionOnScreen > Screen.width * 0.9f)
         {
             state = States.SwipedRight;
             return true;
@@ -130,12 +146,8 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
     {
         float positionOnScreen = Camera.main.WorldToScreenPoint(transform.position).x;
         float screenHalfWidth = Screen.width / 2f;
-        
-        if (positionOnScreen  < -screenHalfWidth * 0.2f)
-        {
-            state = States.SwipedLeft;
-        }
-        else if (positionOnScreen < screenHalfWidth * 0.7f)
+
+        if (positionOnScreen < screenHalfWidth * 0.7f)
         {
             NoOverlay.alpha = (Screen.width / 2 - positionOnScreen) / (Screen.width / 2f);
         }
@@ -144,11 +156,7 @@ public class SwipableProfile : MonoBehaviour, ISwipable {
             NoOverlay.alpha = 0;
         }
 
-        if (positionOnScreen > Screen.width * 1.3f)
-        {
-            state = States.SwipedRight;
-        }
-        else if (positionOnScreen > screenHalfWidth * 1.2f)
+        if (positionOnScreen > screenHalfWidth * 1.2f)
         {
             YesOverlay.alpha = (positionOnScreen - (Screen.width / 2)) / (Screen.width / 2f);
         }
